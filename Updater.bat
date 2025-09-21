@@ -57,7 +57,7 @@ if "%PROCESSOR_ARCHITECTURE%" == "x86" (
 
 :::::: VERSION CHECK
 
-if not exist "%WINDIR%\system32\wbem\wmic.exe" goto LATEST
+if not exist "%WINDIR%\system32\wbem\wmic.exe" goto POWERSHELL
 
 for /f %%V in ('wmic datafile where "name='%HERE_DS%App\\Obsidian\\Obsidian.exe'" get version
   ^| %BUSYBOX% tail -n2
@@ -67,8 +67,19 @@ for /f %%V in ('wmic datafile where "name='%HERE_DS%App\\Obsidian\\Obsidian.exe'
 do (set CURRENT=%%V)
 echo Current: %CURRENT%
 
-:LATEST
+:POWERSHELL
+set "APP_EXE=%HERE_DS%App\\Obsidian\\Obsidian.exe"
 
+:: Check if file exists
+if not exist "%APP_EXE%" goto LATEST
+:: Call PowerShell to get the file version
+for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command ^
+  "(Get-Item '%APP_EXE%').VersionInfo.FileVersion"`) do (
+    set "CURRENT=%%V"
+)
+echo Current: %CURRENT%
+
+:LATEST
 set LATEST_URL="https://github.com/obsidianmd/obsidian-releases/releases/latest"
 
 for /f %%V in ('%CURL% -I -s %CURL_PROXY% %LATEST_URL%
