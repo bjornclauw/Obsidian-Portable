@@ -66,7 +66,7 @@ for /f %%V in ('wmic datafile where "name='%HERE_DS%App\\Obsidian\\Obsidian.exe'
   ^| %BUSYBOX% rev') ^
 do (set CURRENT=%%V)
 echo Current: %CURRENT%
-
+goto LATEST
 :POWERSHELL
 set "APP_EXE=%HERE_DS%App\\Obsidian\\Obsidian.exe"
 
